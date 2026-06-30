@@ -1,0 +1,116 @@
+# CLI-Based Library Management System using OOP
+
+class Book:
+    def __init__(self, book_id, title, author):
+        self.book_id = book_id
+        self.title = title
+        self.author = author
+        self.available = True
+
+    def display(self):
+        status = "Available" if self.available else "Issued"
+        print(f"ID: {self.book_id} | Title: {self.title} | Author: {self.author} | Status: {status}")
+
+
+class User:
+    def __init__(self, name):
+        self.name = name
+
+
+class Member(User):  # Inheritance
+    def __init__(self, name):
+        super().__init__(name)
+        self.__borrowed_books = []   # Encapsulation
+
+    def borrow_book(self, book):
+        if book.available:
+            book.available = False
+            self.__borrowed_books.append(book)
+            print(f"\n'{book.title}' has been issued successfully.")
+        else:
+            print("\nBook is already issued.")
+
+    def return_book(self, book):
+        if book in self.__borrowed_books:
+            book.available = True
+            self.__borrowed_books.remove(book)
+            print(f"\n'{book.title}' has been returned successfully.")
+        else:
+            print("\nYou have not borrowed this book.")
+
+    def view_borrowed_books(self):
+        if not self.__borrowed_books:
+            print("\nNo books borrowed.")
+        else:
+            print("\nBorrowed Books:")
+            for book in self.__borrowed_books:
+                print(f"- {book.title}")
+
+
+class Library:
+    def __init__(self):
+        self.books = []
+
+    def add_book(self, book):
+        self.books.append(book)
+
+    def display_books(self):
+        print("\n------ Library Books ------")
+        for book in self.books:
+            book.display()
+
+    def search_book(self, book_id):
+        for book in self.books:
+            if book.book_id == book_id:
+                return book
+        return None
+
+
+# Main Program
+library = Library()
+
+library.add_book(Book(1, "Python Programming", "Guido"))
+library.add_book(Book(2, "Data Structures", "Mark Allen"))
+library.add_book(Book(3, "Machine Learning", "Andrew Ng"))
+
+name = input("Enter your name: ")
+member = Member(name)
+
+while True:
+    print("\n===== Library Menu =====")
+    print("1. View Books")
+    print("2. Borrow Book")
+    print("3. Return Book")
+    print("4. View Borrowed Books")
+    print("5. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        library.display_books()
+
+    elif choice == "2":
+        book_id = int(input("Enter Book ID to borrow: "))
+        book = library.search_book(book_id)
+        if book:
+            member.borrow_book(book)
+        else:
+            print("Book not found.")
+
+    elif choice == "3":
+        book_id = int(input("Enter Book ID to return: "))
+        book = library.search_book(book_id)
+        if book:
+            member.return_book(book)
+        else:
+            print("Book not found.")
+
+    elif choice == "4":
+        member.view_borrowed_books()
+
+    elif choice == "5":
+        print("\nThank you for using the Library Management System!")
+        break
+
+    else:
+        print("Invalid choice. Please try again.")
